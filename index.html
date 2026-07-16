@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RawStream — Buy & Sell Professional Footage</title>
+<meta name="description" content="RawStream is a polished marketplace where creators upload high-quality clips and photos, buyers preview before purchasing, and creators get paid for every download.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="logo" data-nav="browse" aria-label="RawStream home">
+        <span class="logo-dot" aria-hidden="true"></span>RawStream
+      </button>
+
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="14" y1="14" x2="18.5" y2="18.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="searchInput" type="search" placeholder="Search clips, photos, creators…" autocomplete="off">
+        <span class="search-tc" id="resultCount" title="results found">0000</span>
+      </div>
+
+      <nav class="main-nav">
+        <button data-nav="browse" class="nav-link is-active">Browse</button>
+        <button data-nav="upload" class="nav-link auth-only" hidden>Upload</button>
+        <button data-nav="dashboard" class="nav-link auth-only" hidden>Dashboard</button>
+      </nav>
+
+      <div class="auth-area">
+        <div id="guestButtons">
+          <button id="loginBtn" class="btn btn-ghost">Log in</button>
+          <button id="signupBtn" class="btn btn-accent">Sign up</button>
+        </div>
+        <div id="userChip" class="user-chip" hidden>
+          <button class="avatar" data-nav="dashboard" id="avatarInitials"></button>
+          <span id="userName"></span>
+          <button id="logoutBtn" class="btn-text">Log out</button>
+        </div>
+      </div>
+
+      <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu">☰</button>
+    </div>
+    <div class="filmstrip" aria-hidden="true"></div>
+  </header>
+
+  <main id="main">
+
+    <!-- ===== BROWSE VIEW ===== -->
+    <section id="view-browse" class="view">
+      <div class="hero">
+        <p class="eyebrow">FRAME 0001 — MARKETPLACE</p>
+        <h1>previewed before purchase.</h1>
+        <p class="hero-sub">Browse curated raw media, preview every file instantly, and pay only when you’re ready to download the full-resolution asset.</p>
+        <div class="how-it-works">
+          <div class="step"><span class="step-num">01</span><span class="step-label">Discover curated clips and photos</span></div>
+          <div class="step"><span class="step-num">02</span><span class="step-label">Purchase with a single click</span></div>
+          <div class="step"><span class="step-num">03</span><span class="step-label">Download the full-resolution asset</span></div>
+        </div>
+      </div>
+
+      <div class="filter-row" id="filterRow">
+        <button class="chip is-active" data-cat="all">All</button>
+        <button class="chip" data-cat="nature">Nature</button>
+        <button class="chip" data-cat="travel">Travel</button>
+        <button class="chip" data-cat="city">City &amp; Urban</button>
+        <button class="chip" data-cat="business">Business</button>
+        <button class="chip" data-cat="technology">Technology</button>
+        <button class="chip" data-cat="people">People</button>
+        <button class="chip" data-cat="food">Food</button>
+        <button class="chip" data-cat="animals">Animals</button>
+        <button class="chip" data-cat="abstract">Abstract</button>
+        <span class="type-toggle">
+          <button class="chip chip-type is-active" data-type="all">All types</button>
+          <button class="chip chip-type" data-type="video">Video</button>
+          <button class="chip chip-type" data-type="image">Photo</button>
+        </span>
+      </div>
+
+      <div id="videoGrid" class="grid"></div>
+      <div id="emptyState" class="empty-state" hidden>
+        <p class="empty-tc">00 RESULTS</p>
+        <p>Nothing on this reel yet. Try a different search or category — or be the first to <button class="link-btn" data-nav="upload">list something</button>.</p>
+      </div>
+    </section>
+
+    <!-- ===== UPLOAD VIEW ===== -->
+    <section id="view-upload" class="view" hidden>
+      <div class="page-head">
+        <p class="eyebrow">SELLER</p>
+        <h2>List new footage or a photo</h2>
+        <p class="hero-sub small">Fill in the details buyers need. Your file stays locked behind a paywall until someone buys it — they only ever see a watermarked preview.</p>
+      </div>
+
+      <form id="uploadForm" class="panel-form">
+        <div class="field-row">
+          <label class="field">
+            <span>What are you selling?</span>
+            <select id="f-mediaType" required>
+              <option value="video">Video clip</option>
+              <option value="image">Photo</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Category</span>
+            <select id="f-category" required>
+              <option value="nature">Nature</option>
+              <option value="travel">Travel</option>
+              <option value="city">City &amp; Urban</option>
+              <option value="business">Business</option>
+              <option value="technology">Technology</option>
+              <option value="people">People</option>
+              <option value="food">Food</option>
+              <option value="animals">Animals</option>
+              <option value="abstract">Abstract</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Title</span>
+          <input id="f-title" type="text" placeholder="e.g. Drone flyover of coastal cliffs at sunrise" required maxlength="80">
+        </label>
+
+        <label class="field">
+          <span>Description</span>
+          <textarea id="f-desc" rows="3" placeholder="What's in the shot, where and how it was captured, what it's good for…" required maxlength="600"></textarea>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Technical details</span>
+            <input id="f-details" type="text" placeholder="e.g. 4K · 30fps · 00:00:14 · shot on drone" maxlength="120">
+          </label>
+          <label class="field">
+            <span>Tags (comma separated)</span>
+            <input id="f-tags" type="text" placeholder="sunrise, coast, drone, aerial">
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Price (USD)</span>
+          <input id="f-price" type="number" min="0.50" step="0.50" value="5.00" required>
+        </label>
+
+        <div class="field-row">
+          <label class="field file-field">
+            <span>Upload file (the actual video or photo being sold)</span>
+            <input id="f-mediaFile" type="file" accept="video/*,image/*" required>
+          </label>
+          <label class="field file-field" id="thumbFieldWrap">
+            <span>Cover thumbnail (shown in the grid — required for video)</span>
+            <input id="f-thumbFile" type="file" accept="image/*">
+          </label>
+        </div>
+
+        <p class="form-note">Buyers never see this raw file until they pay. Everyone else only sees a watermarked, protected preview.</p>
+
+        <button type="submit" class="btn btn-accent btn-lg">Publish listing</button>
+        <p id="uploadStatus" class="form-status" hidden></p>
+      </form>
+    </section>
+
+    <!-- ===== DASHBOARD VIEW ===== -->
+    <section id="view-dashboard" class="view" hidden>
+      <div class="page-head">
+        <p class="eyebrow">ACCOUNT</p>
+        <h2>Your dashboard</h2>
+      </div>
+
+      <div class="dash-tabs">
+        <button data-tab="uploads" class="tab is-active">My uploads</button>
+        <button data-tab="purchases" class="tab">My purchases</button>
+        <button data-tab="profile" class="tab">Profile</button>
+      </div>
+
+      <div id="dashUploads" class="dash-panel"></div>
+      <div id="dashPurchases" class="dash-panel" hidden></div>
+      <div id="dashProfile" class="dash-panel" hidden></div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="filmstrip" aria-hidden="true"></div>
+    <p>RawStream is a demonstration marketplace created with plain HTML, CSS and JavaScript. Files remain in your browser (localStorage + IndexedDB); no real server is involved, and purchases are simulated.</p>
+  </footer>
+
+
+
+
+
+  
+  <!-- ===== VIDEO / PHOTO DETAIL MODAL ===== -->
+  <div id="itemModal" class="modal-overlay" hidden>    
+    <div class="modal item-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <div id="itemModalContent"></div>
+    </div>
+  </div>
+
+  <!-- ===== AUTH MODAL ===== -->
+   <div id="authModal" class="modal-overlay" hidden>  
+    <div class="modal auth-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <div class="auth-tabs">
+        <button data-authtab="login" class="tab is-active">Log in</button>
+        <button data-authtab="signup" class="tab">Sign up</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label class="field"><span>Email</span><input id="li-email" type="email" required></label>
+        <label class="field"><span>Password</span><input id="li-password" type="password" required></label>
+        <button type="submit" class="btn btn-accent btn-lg">Log in</button>
+        <p id="loginStatus" class="form-status" hidden></p>
+      </form>
+
+      <form id="signupForm" class="auth-form" hidden>   
+        <label class="field"><span>Username</span><input id="su-username" type="text" required maxlength="24"></label>
+        <label class="field"><span>Email</span><input id="su-email" type="email" required></label>
+        <label class="field"><span>Password</span><input id="su-password" type="password" required minlength="4"></label>
+        <button type="submit" class="btn btn-accent btn-lg">Create account</button>
+        <p id="signupStatus" class="form-status" hidden></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== CHECKOUT MODAL ===== -->
+  <div id="checkoutModal" class="modal-overlay" hidden>
+    <div class="modal checkout-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <div id="checkoutContent"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>   
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
