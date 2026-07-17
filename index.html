@@ -238,6 +238,21 @@
   <div id="toast" class="toast" hidden></div>   
 </div>
 
-<script src="app.js"></script>
+<script src="app.js" type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDo_NoE_EVAcjGAU9O0Ftxan04ynmkPpl0",
+  authDomain: "rawstream-1371e.firebaseapp.com",
+  projectId: "rawstream-1371e",
+  storageBucket: "rawstream-1371e.firebasestorage.app",
+  messagingSenderId: "518920613023",
+  appId: "1:518920613023:web:c0d8e2373a20877603c6aa",
+  measurementId: "G-ECVRYSN9YE"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+</script>
 </body>
 </html>
