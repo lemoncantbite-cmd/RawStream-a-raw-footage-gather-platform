@@ -32,7 +32,6 @@
       <div class="auth-area">
         <div id="guestButtons">
           <button id="loginBtn" class="btn btn-ghost">Log in</button>
-          <button id="signupBtn" class="btn btn-accent">Sign up</button>
         </div>
         <div id="userChip" class="user-chip" hidden>
           <button class="avatar" data-nav="dashboard" id="avatarInitials"></button>
@@ -51,8 +50,8 @@
     <!-- ===== BROWSE VIEW ===== -->
     <section id="view-browse" class="view">
       <div class="hero">
-        <p class="eyebrow">FRAME 0001 — MARKETPLACE</p>
-        <h1>previewed before purchase.</h1>
+        <p class="eyebrow">MARKETPLACE</p>
+        <h1>Upload and Buy your local video's</h1>
         <p class="hero-sub">Browse curated raw media, preview every file instantly, and pay only when you’re ready to download the full-resolution asset.</p>
         <div class="how-it-works">
           <div class="step"><span class="step-num">01</span><span class="step-label">Discover curated clips and photos</span></div>
@@ -207,7 +206,6 @@
       <button class="modal-close" data-close aria-label="Close">&times;</button>
       <div class="auth-tabs">
         <button data-authtab="login" class="tab is-active">Log in</button>
-        <button data-authtab="signup" class="tab">Sign up</button>
       </div>
 
       <form id="loginForm" class="auth-form">
@@ -215,14 +213,6 @@
         <label class="field"><span>Password</span><input id="li-password" type="password" required></label>
         <button type="submit" class="btn btn-accent btn-lg">Log in</button>
         <p id="loginStatus" class="form-status" hidden></p>
-      </form>
-
-      <form id="signupForm" class="auth-form" hidden>   
-        <label class="field"><span>Username</span><input id="su-username" type="text" required maxlength="24"></label>
-        <label class="field"><span>Email</span><input id="su-email" type="email" required></label>
-        <label class="field"><span>Password</span><input id="su-password" type="password" required minlength="4"></label>
-        <button type="submit" class="btn btn-accent btn-lg">Create account</button>
-        <p id="signupStatus" class="form-status" hidden></p>
       </form>
     </div>
   </div>

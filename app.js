@@ -461,9 +461,7 @@ function openAuthModal(tab) {
 function switchAuthTab(tab) {
   document.querySelectorAll('[data-authtab]').forEach(b => b.classList.toggle('is-active', b.dataset.authtab === tab));
   document.getElementById('loginForm').hidden = tab !== 'login';
-  document.getElementById('signupForm').hidden = tab !== 'signup';
 }
-document.querySelectorAll('[data-authtab]').forEach(btn => btn.addEventListener('click', () => switchAuthTab(btn.dataset.authtab)));
 
 /* ---------------------------------------------------------------------- */
 /* Global click delegation: navigation + grid open + filters              */
@@ -508,7 +506,6 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => {
 /* Auth forms                                                             */
 /* ---------------------------------------------------------------------- */
 document.getElementById('loginBtn').addEventListener('click', () => openAuthModal('login'));
-document.getElementById('signupBtn').addEventListener('click', () => openAuthModal('signup'));
 document.getElementById('logoutBtn').addEventListener('click', () => {
   logout();
   renderHeader();
@@ -526,20 +523,6 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
     renderHeader();
     renderBrowse();
     toast('Welcome back, ' + currentUser.username + '.');
-    e.target.reset();
-    statusEl.hidden = true;
-  } catch (err) { showStatus(statusEl, err.message, false); }
-});
-
-document.getElementById('signupForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const statusEl = document.getElementById('signupStatus');
-  try {
-    signup(document.getElementById('su-username').value, document.getElementById('su-email').value, document.getElementById('su-password').value);
-    closeModal(document.getElementById('authModal'));
-    renderHeader();
-    renderBrowse();
-    toast('Account created — welcome to RawStream, ' + currentUser.username + '.');
     e.target.reset();
     statusEl.hidden = true;
   } catch (err) { showStatus(statusEl, err.message, false); }
