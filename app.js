@@ -95,44 +95,6 @@ function showStatus(el, msg, ok) {
   el.hidden = false;
   el.className = 'form-status ' + (ok ? 'ok' : 'err');
 }
-
-/* ---------------------------------------------------------------------- */
-/* Auth                                                                    */
-/* ---------------------------------------------------------------------- */
-let currentUser = null;
-
-function refreshCurrentUser() {
-  const id = getSessionUserId();
-  if (!id) { currentUser = null; return; }
-  currentUser = getUsers().find(u => u.id === id) || null;
-  if (!currentUser) setSessionUserId(null);
-}
-
-function signup(username, email, password) {
-  username = (username || '').trim();
-  email = (email || '').trim();
-  const users = getUsers();
-  if (username.length < 2) throw new Error('Username needs at least 2 characters.');
-  if (!email.includes('@')) throw new Error('Enter a valid email address.');
-  if (password.length < 4) throw new Error('Password needs at least 4 characters.');
-  if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) throw new Error('An account with this email already exists.');
-  const user = { id: uid('u'), username, email, password, createdAt: new Date().toISOString() };
-  users.push(user);
-  saveUsers(users);
-  setSessionUserId(user.id);
-  currentUser = user;
-  return user;
-}
-function login(email, password) {
-  const users = getUsers();
-  const user = users.find(u => u.email.toLowerCase() === String(email).trim().toLowerCase());
-  if (!user || user.password !== password) throw new Error('Email or password is incorrect.');
-  setSessionUserId(user.id);
-  currentUser = user;
-  return user;
-}
-function logout() { setSessionUserId(null); currentUser = null; }
-
 /* ---------------------------------------------------------------------- */
 /* Video / photo listings                                                 */
 /* ---------------------------------------------------------------------- */
@@ -454,14 +416,29 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(o => { if (!o.hidden) closeModal(o); });
 });
 
-function openAuthModal(tab) {
-  switchAuthTab(tab || 'login');
-  document.getElementById('authModal').hidden = false;
+function openAuthModal(defaultTab = 'login') {
+  const modal = document.getElementById('authModal');
+  if (!modal) return;
+
+  // Modal show karo
+  modal.hidden = false;
+
+  // Target tab show karo (login ya signup)
+  switchAuthTab(defaultTab);
 }
+
 function switchAuthTab(tab) {
   document.querySelectorAll('[data-authtab]').forEach(b => b.classList.toggle('is-active', b.dataset.authtab === tab));
+
+  // Show / Hide respective forms
   document.getElementById('loginForm').hidden = tab !== 'login';
+  document.getElementById('signupForm').hidden = tab !== 'signup';
 }
+
+document.querySelector('.auth-tabs')?.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-authtab]');
+  if (btn) switchAuthTab(btn.dataset.authtab);
+});
 
 /* ---------------------------------------------------------------------- */
 /* Global click delegation: navigation + grid open + filters              */
@@ -505,7 +482,18 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => {
 /* ---------------------------------------------------------------------- */
 /* Auth forms                                                             */
 /* ---------------------------------------------------------------------- */
-document.getElementById('loginBtn').addEventListener('click', () => openAuthModal('login'));
+const guestButtons = document.getElementById('guestButtons');
+if (guestButtons) {
+  guestButtons.addEventListener('click', (e) => {
+    // Agar Log In button click hua
+    if (e.target.id === 'loginBtn') {
+      openAuthModal('login');
+    } else if (e.target.id === 'signupBtn') { // Agar Sign Up button click hua
+      openAuthModal('signup');
+    }
+  });
+}
+
 document.getElementById('logoutBtn').addEventListener('click', () => {
   logout();
   renderHeader();
@@ -528,6 +516,67 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
   } catch (err) { showStatus(statusEl, err.message, false); }
 });
 
+document.getElementById('signupForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const statusEl = document.getElementById('signupStatus');
+  try {
+    const user = signup(
+      document.getElementById('su-username').value,
+      document.getElementById('su-email').value,
+      document.getElementById('su-password').value
+    );
+    closeModal(document.getElementById('authModal'));
+    renderHeader();
+    renderBrowse();
+    toast('Account created! Welcome, ' + user.username + '.');
+    e.target.reset();
+    statusEl.hidden = true;
+  } catch (err) {
+    showStatus(statusEl, err.message, false);
+  }
+});
+
+// JWT Payload decode Utility
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
+// Global Callback for Google Sign-In
+window.handleGoogleResponse = function(response) {
+  const payload = parseJwt(response.credential);
+  if (!payload) {
+    toast('Google Sign-In failed.');
+    return;
+  }
+
+  const { email, name } = payload;
+  const users = getUsers();
+  
+  // Existing user search
+  let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+  // Agar user pehle se exist nahi karta toh auto-create kar do
+  if (!user) {
+    user = signup(name || 'new_user', email, 'google_authenticated_oauth');
+  }
+
+  // Session set up & UI update
+  setSessionUserId(user.id);
+  refreshCurrentUser();
+  closeModal(document.getElementById('authModal'));
+  renderHeader();
+  renderBrowse();
+  toast('Welcome, ' + user.username + '!');
+};
 /* ---------------------------------------------------------------------- */
 /* Upload form                                                            */
 /* ---------------------------------------------------------------------- */
